@@ -6,42 +6,6 @@ from modules.classes import *
 import json
 
 
-
-# def load_statistics('data.json'):
-#     try:
-#         with open('data.json', 'r') as file:
-#             statistics = json.load(file)
-#         return statistics
-#     except FileNotFoundError:
-#         return {"players": [])
-#
-# statistics = load_statistics('data.json')
-#
-# def save_statistics('data.json', statistics):
-#     with open(file_path, 'w') as file:
-#         json.dump(statistics, file, indent=4)
-#
-# def update_statistics(statistics, player_name, score, level, enemies_destroyed):
-#     player_found = False
-#     for player in statistics["players"]:
-#         if player["name"] == player_name:
-#             player["score"] = score
-#             player["level"] = level
-#             player["enemies_destroyed"] = enemies_destroyed
-#             player_found = True
-#             break
-#     if not player_found:
-#         statistics["players"].append({
-#             "name": player_name,
-#             "score": score,
-#             "level": level,
-#             "enemies_destroyed": enemies_destroyed
-#         })
-
-
-
-
-
 pygame.init()
 
 background = pygame.image.load(os.path.join(PATH, 'images/background.webp'))
@@ -94,7 +58,7 @@ player_1 = BasePlayer(1, 1,
                       sprite_path="images/tank1.PNG"
                       )
 
-player_2 = BasePlayer(2, 1,
+player_2 = BasePlayer(26, 14,
                       movement=Movement(
                           up=pygame.K_UP,
                           down=pygame.K_DOWN,
@@ -111,8 +75,8 @@ is_game_running = True
 winner = None
 while is_game_running:
     window.blit(background, (0, 0))
-
-    #window.fill((0, 0, 0))
+    # Game.start_game()
+    # Game.play()
     for block in blocks_list:
         block.blit()
         if block.colliderect(player_1.bullet):
@@ -140,7 +104,8 @@ while is_game_running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             is_game_running = False
-    clock.tick(15)
+    clock.tick(12)
+    #Game.end_game()
     pygame.display.flip()
 
 while is_winner:

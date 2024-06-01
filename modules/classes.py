@@ -1,3 +1,4 @@
+import json
 import os
 import pygame
 from tanks.modules.mapmatrix import map
@@ -8,6 +9,26 @@ STEP = 50
 
 window = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption('Tanks')
+
+class Game:
+    def __init__(self):
+        with open('data.json', 'r') as f:
+            self.data = json.load(f)
+        self.score = 0
+        self.nickname = None
+
+    def start_game(self):
+        self.nickname = self.data['name']
+        self.score = self.data.get(self.nickname, 0)
+
+    def play(self):
+        self.score = 50
+
+    def end_game(self):
+        if self.data.get(self.nickname, 0) < self.score:
+            self.data[self.nickname] = self.score
+        with open('data.json', 'w') as f:
+            json.dump(self.data, f)
 
 
 class Block(pygame.Rect):
