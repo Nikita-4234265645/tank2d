@@ -1,0 +1,14 @@
+{
+    "players": [
+        {
+            "name": "Player1",
+            "score": 0,
+            "enemies_destroyed": 0
+        },
+        {
+            "name": "Player2",
+            "score": 0,
+            "enemies_destroyed": 0
+        }
+    ]
+}
