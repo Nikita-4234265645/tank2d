@@ -5,7 +5,7 @@ import pygame
 import pygame_gui
 
 from modules.buttons import PLAY_BUTTON, QUIT_BUTTON
-from modules.config import SCREEN_SIZE, STEP
+from modules.config import SCREEN_SIZE, STEP, TICK
 from modules.classes import PATH, Block, BasePlayer, Movement
 from modules.create_score_tabl import *
 from modules.mapmatrix import LEVEL_MAP
@@ -121,7 +121,7 @@ def play():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_game_running = False
-        clock.tick(12)
+        clock.tick(TICK)
         # Game.end_game()
         pygame.display.flip()
 
