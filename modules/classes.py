@@ -3,7 +3,7 @@ import os
 import pygame
 
 from modules.config import SCREEN_SIZE, STEP
-from modules.mapmatrix import map
+from modules.mapmatrix import LEVEL_MAP
 import sqlite3
 import logging
 
@@ -127,22 +127,22 @@ class BasePlayer(Tank):
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[self.movement.up]:
-            if map[self.position[1] - 1][self.position[0]] == 0:
+            if LEVEL_MAP[self.position[1] - 1][self.position[0]] == 0:
                 self.y -= STEP
                 self.position[1] -= 1
             self.rotate(0)
         elif keys[self.movement.down]:
-            if map[self.position[1] + 1][self.position[0]] == 0:
+            if LEVEL_MAP[self.position[1] + 1][self.position[0]] == 0:
                 self.y += STEP
                 self.position[1] += 1
             self.rotate(180)
         elif keys[self.movement.left]:
-            if map[self.position[1]][self.position[0] - 1] == 0:
+            if LEVEL_MAP[self.position[1]][self.position[0] - 1] == 0:
                 self.x -= STEP
                 self.position[0] -= 1
             self.rotate(90)
         elif keys[self.movement.right]:
-            if map[self.position[1]][self.position[0] + 1] == 0:
+            if LEVEL_MAP[self.position[1]][self.position[0] + 1] == 0:
                 self.x += STEP
                 self.position[0] += 1
             self.rotate(270)

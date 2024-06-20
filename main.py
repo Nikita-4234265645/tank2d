@@ -8,6 +8,7 @@ from modules.buttons import PLAY_BUTTON, QUIT_BUTTON
 from modules.config import SCREEN_SIZE, STEP
 from modules.classes import PATH, Block, BasePlayer, Movement
 from modules.create_score_tabl import *
+from modules.mapmatrix import LEVEL_MAP
 from modules.utils import get_font
 
 
@@ -26,30 +27,26 @@ font = pygame.font.SysFont(None, 120)
 winner_1_text = font.render('BLUE WINS', True, [0, 0, 255])
 winner_2_text = font.render('RED WINS', True, [255, 0, 0])
 
-x = 0
-y = 0
-blocks_list = []
-
 wall_image1 = os.path.join(PATH, 'images/wall.png')
 wall_image2 = os.path.join(PATH, 'images/wall_1.png')
 
 window = pygame.display.set_mode(SCREEN_SIZE)
 
 
-def generate_blocks(map, STEP, wall_image1, wall_image2):
-    y = 0
-    for row in map:
-        x = 0
+def generate_blocks(level_map, step, wall_1, wall_2):
+    y_pos = 0
+    for row in level_map:
+        x_pos = 0
         for cell in row:
             if cell == 1:
-                yield Block(x, y, 1, wall_image1)
+                yield Block(x_pos, y_pos, 1, wall_1)
             elif cell == 2:
-                yield Block(x, y, 2, wall_image2)
-            x += STEP
-        y += STEP
+                yield Block(x_pos, y_pos, 2, wall_2)
+            x_pos += step
+        y_pos += step
 
 
-blocks_list = list(generate_blocks(map, STEP, wall_image1, wall_image2))
+blocks_list = list(generate_blocks(LEVEL_MAP, STEP, wall_image1, wall_image2))
 
 '''for row in map:
     for cell in row:
@@ -101,13 +98,14 @@ def play():
             if block.colliderect(player_1.bullet):
                 player_1.bullet.stop()
                 if block.type_block == 1:
-                    map[block.y // STEP][block.x // STEP] = 0
+                    LEVEL_MAP[block.y // STEP][block.x // STEP] = 0
                     block.x = 500000
             if block.colliderect(player_2.bullet):
                 player_2.bullet.stop()
                 if block.type_block == 1:
-                    map[block.y // STEP][block.x // STEP] = 0
-                    block.x = 500000
+                    LEVEL_MAP[block.y // STEP][block.x // STEP] = 0
+                    # block.x = 500000
+                    blocks_list.remove(block)
             if player_1.colliderect(player_2.bullet):
                 winner = 2
                 is_game_running = False
