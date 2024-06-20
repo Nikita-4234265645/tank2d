@@ -2,6 +2,12 @@ import json
 import os
 import pygame
 from tanks.modules.mapmatrix import map
+import sqlite3
+import logging
+
+logger = logging.getLogger("nameOfTheLogger")
+logger.addHandler(logging.StreamHandler())
+logger.setLevel("DEBUG")
 
 PATH = os.path.abspath(__file__ + '/../..')
 SCREEN_SIZE = (1400, 800)
@@ -12,8 +18,10 @@ pygame.display.set_caption('Tanks')
 
 class Game:
     def __init__(self):
+#############################################
         with open('data.json', 'r') as f:
             self.data = json.load(f)
+#############################################
         self.score = 0
         self.nickname = None
 
@@ -27,8 +35,10 @@ class Game:
     def end_game(self):
         if self.data.get(self.nickname, 0) < self.score:
             self.data[self.nickname] = self.score
+#############################################
         with open('data.json', 'w') as f:
             json.dump(self.data, f)
+#############################################
 
 
 class Block(pygame.Rect):
@@ -49,9 +59,6 @@ class Tank(pygame.Rect):
         self.position = [x, y]
         self.bullet = Bullet(x, y)
         self.angle = 0
-
-    def move(self):
-        pass
 
     def blit(self):
         window.blit(self.image, (self.x, self.y))
@@ -85,6 +92,33 @@ class BasePlayer(Tank):
         self.image = pygame.image.load(os.path.join(PATH, sprite_path))
         self.image = pygame.transform.scale(self.image, (STEP, STEP))
         self.movement = movement
+        self.table_name = 'players'
+        self.db_name = 'db_players.sqlite'
+
+    def create_score_table(self, id=int, nickname=str, score=int):
+        conn = sqlite3.connect(self.db4.sqlite3)
+        try:
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS "players" (
+            VALUES (? ? ?)
+             )
+            """
+            query_params = (id, nickname, score)
+            conn.execute(create_table_query, query_params)
+            conn.commit()
+            conn.close()
+        finally:
+            conn.close()
+
+    def update_score_table(self, id=int, nickname=str, score=int):
+        conn = sqlite3.connect('db_players.sqlite')
+        try:
+            query = f'''
+            UPDATE 'players' SET "nickname" = ? WHERE "score" = ?, "id" = ?'''
+            conn.execute(query, (id, nickname, +score,))
+            conn.commit()
+        finally:
+            conn.close()
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -140,3 +174,34 @@ class Bullet(pygame.Rect):
         self.count = 0
         self.x = 5000
         #del self
+
+
+class Button(): #from yt @baraltech
+    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+        self.image = image
+        self.x_pos = pos [0]
+        self.y_pos = pos [1]
+        self.font = font
+        self.base_color, self.hovering_color = base_color, hovering_color
+        self. text_input = text_input
+        self. text = self. font.render (self.text_input, True, self.base_color)
+        if self.image is None:
+            self.image = self.text
+        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        self. text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+    def update(self, screen):
+        if self.image is not None:
+            screen. blit(self.image, self.rect)
+        screen. blit(self.text, self.text_rect)
+
+    def checkForInput(self, position):
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+            return True
+        return False
+
+    def changeColor(self, position):
+        if position[0] in range(self. rect.left, self.rect.right) and position[1] in range(self.rect. top, self.rect.bottom):
+            self.text = self. font. render (self.text_input, True, self.hovering_color)
+        else:
+            self. text = self.font.render(self.text_input, True, self.base_color)
