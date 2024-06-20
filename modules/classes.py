@@ -1,7 +1,9 @@
 import json
 import os
 import pygame
-from tanks.modules.mapmatrix import map
+
+from modules.config import SCREEN_SIZE, STEP
+from modules.mapmatrix import map
 import sqlite3
 import logging
 
@@ -10,18 +12,18 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel("DEBUG")
 
 PATH = os.path.abspath(__file__ + '/../..')
-SCREEN_SIZE = (1400, 800)
-STEP = 50
+
 
 window = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption('Tanks')
 
+
 class Game:
     def __init__(self):
-#############################################
+        #############################################
         with open('data.json', 'r') as f:
             self.data = json.load(f)
-#############################################
+        #############################################
         self.score = 0
         self.nickname = None
 
@@ -35,9 +37,11 @@ class Game:
     def end_game(self):
         if self.data.get(self.nickname, 0) < self.score:
             self.data[self.nickname] = self.score
-#############################################
+        #############################################
         with open('data.json', 'w') as f:
             json.dump(self.data, f)
+
+
 #############################################
 
 
@@ -173,35 +177,41 @@ class Bullet(pygame.Rect):
     def stop(self):
         self.count = 0
         self.x = 5000
-        #del self
+        # del self
 
 
-class Button(): #from yt @baraltech
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
-        self.image = image
-        self.x_pos = pos [0]
-        self.y_pos = pos [1]
+class Button:  # from yt @baraltech
+    def __init__(self,
+                 image,
+                 pos,
+                 text_input,
+                 font: pygame.Font,
+                 base_color: pygame.Color,
+                 hovering_color: pygame.Color,
+                 ):
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
         self.font = font
-        self.base_color, self.hovering_color = base_color, hovering_color
-        self. text_input = text_input
-        self. text = self. font.render (self.text_input, True, self.base_color)
-        if self.image is None:
-            self.image = self.text
-        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-        self. text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+        self.original_display = self.font.render(text_input, True, base_color)
+        self.hover_display = self.font.render(text_input, True, hovering_color)
+        self.hovering_color = hovering_color
+        self.rect = self.original_display.get_rect(center=(self.x_pos, self.y_pos))
+        self.image = pygame.transform.scale(image, self.rect.size)
+
+        self.display = None
 
     def update(self, screen):
-        if self.image is not None:
-            screen. blit(self.image, self.rect)
-        screen. blit(self.text, self.text_rect)
+        mouse_pos = pygame.mouse.get_pos()
+        is_hover = self.rect.collidepoint(mouse_pos)
+        self.display = self.hover_display if is_hover else self.original_display
 
-    def checkForInput(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+        screen.blit(self.display, self.rect)
+        if is_hover and self.image:
+            screen.blit(self.image, self.rect)
+
+    def check_for_input(self) -> bool:
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
             return True
         return False
-
-    def changeColor(self, position):
-        if position[0] in range(self. rect.left, self.rect.right) and position[1] in range(self.rect. top, self.rect.bottom):
-            self.text = self. font. render (self.text_input, True, self.hovering_color)
-        else:
-            self. text = self.font.render(self.text_input, True, self.base_color)

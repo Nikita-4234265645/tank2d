@@ -1,0 +1,2 @@
+SCREEN_SIZE = (1400, 800)
+STEP = 50

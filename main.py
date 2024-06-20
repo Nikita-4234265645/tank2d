@@ -1,12 +1,14 @@
+import os
 import sys
+from random import randint
 import pygame
 import pygame_gui
-import os
-import random
-from modules.mapmatrix import *
-from modules.classes import *
-from random import randint
+
+from modules.buttons import PLAY_BUTTON, QUIT_BUTTON
+from modules.config import SCREEN_SIZE, STEP
+from modules.classes import PATH, Block, BasePlayer, Movement
 from modules.create_score_tabl import *
+from modules.utils import get_font
 
 pygame.init()
 
@@ -16,10 +18,10 @@ background = pygame.transform.scale(background, SCREEN_SIZE)
 
 clock = pygame.time.Clock()
 MANAGER = pygame_gui.UIManager(SCREEN_SIZE)
-PLAYER1_INPUT = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((1200, 20), (300, 50)), manager=MANAGER, object_id='#player1_entry')
-PLAYER2_INPUT = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((1200, 480), (300, 50)), manager=MANAGER, object_id='#player2_entry')
-
-
+PLAYER1_INPUT = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((1200, 20), (300, 50)), manager=MANAGER,
+                                                    object_id='#player1_entry')
+PLAYER2_INPUT = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((1200, 480), (300, 50)), manager=MANAGER,
+                                                    object_id='#player2_entry')
 
 font = pygame.font.SysFont(None, 120)
 winner_1_text = font.render('BLUE WINS', True, [0, 0, 255])
@@ -45,6 +47,7 @@ def generate_blocks(map, STEP, wall_image1, wall_image2):
             x += STEP
         y += STEP
 
+
 blocks_list = list(generate_blocks(map, STEP, wall_image1, wall_image2))
 
 '''for row in map:
@@ -65,7 +68,7 @@ player_1 = BasePlayer(1, 1,
                           right=pygame.K_d,
                           shoot=pygame.K_SPACE
                       ),
-                      sprite_path="images/tank1.PNG"
+                      sprite_path="images/tank1.png"
                       )
 
 player_2 = BasePlayer(26, 14,
@@ -76,18 +79,18 @@ player_2 = BasePlayer(26, 14,
                           right=pygame.K_RIGHT,
                           shoot=pygame.K_l
                       ),
-                      sprite_path="images/tank2.PNG"
+                      sprite_path="images/tank2.png"
                       )
-
-
 
 is_game_running = True
 winner = None
 
-def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("assets/font.ttf", size)
 
 def play():
+    global is_game_running
+    global winner
+
+    is_winner = False
     while is_game_running:
         window.blit(background, (0, 0))
         # Game.start_game()
@@ -120,13 +123,14 @@ def play():
             if event.type == pygame.QUIT:
                 is_game_running = False
         clock.tick(12)
-        #Game.end_game()
+        # Game.end_game()
         pygame.display.flip()
 
     while is_winner:
         score = 0
         window.blit(background, (0, 0))
-        cors = (list(SCREEN_SIZE)[0] // 2 - winner_1_text.get_width() // 2, list(SCREEN_SIZE)[1] // 2 - winner_1_text.get_width() // 2)
+        cors = (list(SCREEN_SIZE)[0] // 2 - winner_1_text.get_width() // 2,
+                list(SCREEN_SIZE)[1] // 2 - winner_1_text.get_width() // 2)
         if winner == 1:
             window.blit(winner_1_text, cors)
         elif winner == 2:
@@ -138,46 +142,43 @@ def play():
                 is_winner = False
         pygame.display.flip()
 
+
 def main_menu():
     pygame.display.set_caption("Menu")
+
+    MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+    MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+
+
     while True:
         window.blit(background, (0, 0))
-        MENU_MOUSE_POS = pygame.mouse.get_pos()
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
-        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play images/Rect.png"), pos=(640, 250),
-                             text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        # OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options images/Rect.png"), pos=(640, 400),
-        #                     text_input="OPTIONS", font=get_font(75), base_color = "#d7fcd4", hovering_color = "White")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit images/Rect.png"), pos = (640, 550),
-                             text_input = "QUIT", font = get_font(75), base_color = "#d7fcd4", hovering_color = "White")
         window.blit(MENU_TEXT, MENU_RECT)
 
         for button in [PLAY_BUTTON, QUIT_BUTTON]:
-            Button.changeColor(MENU_MOUSE_POS)
-            Button.update(window)
+            button.update(window)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                if PLAY_BUTTON.check_for_input():
                     play()
-                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                if QUIT_BUTTON.check_for_input():
                     pygame.quit()
                     sys.exit()
         pygame.display.update()
     get_user_name()
 
+
 def get_user_name():
     while True:
-        UI_REFRESH_RATE = clock.tick(60)/1000
+        UI_REFRESH_RATE = clock.tick(60) / 1000
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED and event.ui_object_id == '#player1_entry' :
+            if event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED and event.ui_object_id == '#player1_entry':
                 BasePlayer.update_score_table(id=randint, nickname=event.text, score=0)
             if event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED and event.ui_object_id == '#player2_entry':
                 BasePlayer.update_score_table(id=randint, nickname=event.text, score=0)
