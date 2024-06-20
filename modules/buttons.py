@@ -1,7 +1,7 @@
 import pygame
 
 from modules.utils import get_font
-from modules.classes import Button
+from modules.button import Button
 
 PLAY_BUTTON = Button(image=pygame.image.load("images/RECT.png"),
                      pos=(640, 250),

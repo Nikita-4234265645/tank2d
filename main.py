@@ -6,7 +6,9 @@ import pygame_gui
 
 from modules.buttons import PLAY_BUTTON, QUIT_BUTTON
 from modules.config import SCREEN_SIZE, STEP, TICK
-from modules.classes import PATH, Block, BasePlayer, Movement
+from modules.classes import PATH, Movement
+from modules.player import BasePlayer
+from modules.block import Block
 from modules.create_score_tabl import *
 from modules.mapmatrix import LEVEL_MAP
 from modules.utils import get_font
@@ -91,8 +93,8 @@ def play():
     is_winner = False
     while is_game_running:
         window.blit(background, (0, 0))
-        # Game.start_game()
-        # Game.play()
+        # ScoreManager.start_game()
+        # ScoreManager.play()
         for block in blocks_list:
             block.blit()
             if block.colliderect(player_1.bullet):
