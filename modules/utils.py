@@ -2,4 +2,5 @@ import pygame
 
 
 def get_font(size):  # Returns Press-Start-2P in the desired size
+    pygame.init()
     return pygame.font.Font("assets/airstrike.ttf", size)

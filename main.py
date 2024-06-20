@@ -10,7 +10,6 @@ from modules.classes import PATH, Block, BasePlayer, Movement
 from modules.create_score_tabl import *
 from modules.utils import get_font
 
-pygame.init()
 
 create_score_table()
 background = pygame.image.load(os.path.join(PATH, 'images/background.webp'))
@@ -33,6 +32,8 @@ blocks_list = []
 
 wall_image1 = os.path.join(PATH, 'images/wall.png')
 wall_image2 = os.path.join(PATH, 'images/wall_1.png')
+
+window = pygame.display.set_mode(SCREEN_SIZE)
 
 
 def generate_blocks(map, STEP, wall_image1, wall_image2):
@@ -187,5 +188,6 @@ def get_user_name():
         MANAGER.update(UI_REFRESH_RATE)
         MANAGER.draw_ui(background)
 
-
-main_menu()
+if __name__ == "__main__":
+    pygame.init()
+    main_menu()
